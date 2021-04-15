@@ -18,23 +18,23 @@ TEST(TracerProvider, GetTracer)
   auto t1 = tp1.GetTracer("test");
   auto t2 = tp1.GetTracer("test");
   auto t3 = tp1.GetTracer("different", "1.0.0");
-  ASSERT_NE(nullptr, t1);
-  ASSERT_NE(nullptr, t2);
-  ASSERT_NE(nullptr, t3);
+  EXPECT_NE(nullptr, t1);
+  EXPECT_NE(nullptr, t2);
+  EXPECT_NE(nullptr, t3);
 
   // Should return the same instance each time.
-  ASSERT_EQ(t1, t2);
-  ASSERT_EQ(t1, t3);
+  EXPECT_EQ(t1, t2);
+  EXPECT_EQ(t1, t3);
 
   // Should be an sdk::trace::Tracer with the processor attached.
   auto sdkTracer1 = dynamic_cast<Tracer *>(t1.get());
   ASSERT_NE(nullptr, sdkTracer1);
-  ASSERT_EQ(processor, sdkTracer1->GetProcessor());
-  ASSERT_EQ("AlwaysOnSampler", sdkTracer1->GetSampler()->GetDescription());
+  EXPECT_EQ(processor, sdkTracer1->GetProcessor());
+  EXPECT_EQ("AlwaysOnSampler", sdkTracer1->GetSampler()->GetDescription());
 
   TracerProvider tp2(processor, Resource::Create({}), std::make_shared<AlwaysOffSampler>());
   auto sdkTracer2 = dynamic_cast<Tracer *>(tp2.GetTracer("test").get());
-  ASSERT_EQ("AlwaysOffSampler", sdkTracer2->GetSampler()->GetDescription());
+  EXPECT_EQ("AlwaysOffSampler", sdkTracer2->GetSampler()->GetDescription());
 }
 
 TEST(TracerProvider, GetSampler)
@@ -49,17 +49,17 @@ TEST(TracerProvider, GetSampler)
   ASSERT_NE(nullptr, t2);
 
   // Should return the same sampler each time.
-  ASSERT_EQ(t1, t2);
+  EXPECT_EQ(t1, t2);
 
   // Should be AlwaysOnSampler
-  ASSERT_EQ("AlwaysOnSampler", t2->GetDescription());
+  EXPECT_EQ("AlwaysOnSampler", t2->GetDescription());
 
   // Create a TracerProvicer with a custom AlwaysOffSampler.
   std::shared_ptr<SpanProcessor> processor2(new SimpleSpanProcessor(nullptr));
   TracerProvider tp2(processor2, Resource::Create({}), std::make_shared<AlwaysOffSampler>());
   auto t3 = tp2.GetSampler();
 
-  ASSERT_EQ("AlwaysOffSampler", t3->GetDescription());
+  EXPECT_EQ("AlwaysOffSampler", t3->GetDescription());
 }
 
 TEST(TracerProvider, Shutdown)
